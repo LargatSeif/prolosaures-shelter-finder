@@ -35,18 +35,20 @@
                     <div class="flex items-center mb-2">
                         <input type="number" name="altitudes[]"
                             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline altitude-input"
-                            placeholder="Altitude" @if(isset($altitudes) && count($altitudes) > 0) value="{{ $altitudes[0] }}" @endif>
-                        <button type="button" class="delete-altitude ml-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-3 rounded focus:outline-none focus:shadow-outline">
+                            placeholder="Altitude" @if (isset($altitudes) && count($altitudes) > 0) value="{{ $altitudes[0] }}" @endif>
+                        <button type="button"
+                            class="delete-altitude ml-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-3 rounded focus:outline-none focus:shadow-outline">
                             &times;
                         </button>
                     </div>
-                    @if(isset($altitudes))
-                        @for($i = 1; $i < count($altitudes); $i++)
+                    @if (isset($altitudes))
+                        @for ($i = 1; $i < count($altitudes); $i++)
                             <div class="flex items-center mb-2">
                                 <input type="number" name="altitudes[]"
                                     class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline altitude-input"
                                     placeholder="Altitude" value="{{ $altitudes[$i] }}">
-                                <button type="button" class="delete-altitude ml-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-3 rounded focus:outline-none focus:shadow-outline">
+                                <button type="button"
+                                    class="delete-altitude ml-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-3 rounded focus:outline-none focus:shadow-outline">
                                     &times;
                                 </button>
                             </div>
@@ -105,7 +107,7 @@
             addAltitudeButton.addEventListener('click', function() {
                 const inputContainer = document.createElement('div');
                 inputContainer.classList.add('flex', 'items-center', 'mb-2');
-                
+
                 const newInput = document.createElement('input');
                 newInput.type = 'number';
                 newInput.name = 'altitudes[]';
@@ -113,11 +115,13 @@
                     'px-3', 'text-gray-700', 'leading-tight', 'focus:outline-none',
                     'focus:shadow-outline', 'altitude-input');
                 newInput.placeholder = 'Altitude';
-                
+
                 const deleteButton = document.createElement('button');
                 deleteButton.type = 'button';
-                deleteButton.classList.add('delete-altitude', 'ml-2', 'bg-red-500', 'hover:bg-red-700', 'text-white', 
-                    'font-bold', 'py-2', 'px-3', 'rounded', 'focus:outline-none', 'focus:shadow-outline');
+                deleteButton.classList.add('delete-altitude', 'ml-2', 'bg-red-500', 'hover:bg-red-700',
+                    'text-white',
+                    'font-bold', 'py-2', 'px-3', 'rounded', 'focus:outline-none', 'focus:shadow-outline'
+                );
                 deleteButton.innerHTML = '&times;';
                 deleteButton.addEventListener('click', function() {
                     if (document.querySelectorAll('.altitude-input').length > 1) {
@@ -126,12 +130,12 @@
                         alert('You need at least one altitude input.');
                     }
                 });
-                
+
                 inputContainer.appendChild(newInput);
                 inputContainer.appendChild(deleteButton);
                 altitudeInputsContainer.appendChild(inputContainer);
             });
-            
+
             const form = document.getElementById('shelter-form');
 
             form.addEventListener('submit', function(event) {
@@ -171,7 +175,7 @@
                         data: altitudes,
                         backgroundColor: backgroundColors,
                         borderColor: borderColors,
-                        borderWidth: 1
+                        borderWidth: 1,
                     }]
                 };
 
@@ -180,15 +184,52 @@
                     data: chartData,
                     options: {
                         plugins: {
-                        legend:{
-                            display:false
-                        },},
+                            legend: {
+                                display: true,
+                                position: 'bottom',
+                                align: 'center',
+                                labels:{
+                                    generateLabels:()=>{
+                                        return [
+                                            {
+                                                text: 'Sheltered',
+                                                fillStyle: 'rgba(255, 99, 132, 0.5)'
+                                            },
+                                            {
+                                                text: 'Unsheltered',
+                                                fillStyle: 'rgba(54, 162, 235, 0.5)'
+                                            }
+                                        ];
+                                    }
+                                }
+                            },
+                            tooltip:{
+                                callbacks:{
+                                    label: function(context){
+                                        const index = context.dataIndex;
+                                        return sheltered[index]? 'Sheltered' : 'Unsheltered';
+                                    }
+                                }
+                            }
+                        },
                         scales: {
                             y: {
-                                beginAtZero: true
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Sheltered Area'
+                                }
+                            },
+                            x: {
+                                position: 'top',
+                                title: {
+                                    display: true,
+                                    text: 'Altitude'
+                                }
                             }
                         }
-                    }
+                    },
+
                 };
 
                 // Create Chart

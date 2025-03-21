@@ -4,11 +4,26 @@ This Laravel application calculates the sheltered area for the Prolosaure rescue
 
 ## Installation
 
-1.  Clone the repository: `git clone <repository_url>`
-2.  Navigate to the project directory: `cd <project_directory>`
-3.  Install dependencies: `composer install`
-4.  Generate an application key: `php artisan key:generate`
-5.  Configure your database in `.env` (if needed for other parts of your application).  This application itself doesn't require a database.
+1.  Clone the repository: 
+
+```bash 
+git clone https://github.com/LargatSeif/prolosaures-shelter-finder.git
+```
+2.  Navigate to the project directory: 
+
+```bash 
+cd prolosaures-shelter-finder
+```
+3.  Install dependencies: 
+
+```bash 
+composer install
+```
+4.  Generate an application key: 
+
+```bash 
+php artisan key:generate
+```
 
 ## Execution
 
@@ -30,17 +45,34 @@ This Laravel application calculates the sheltered area for the Prolosaure rescue
 
 ### Via Web Interface
 
-1.  Serve the application using Laravel's built-in server or a web server like Apache or Nginx: `php artisan serve`
-2.  Open your web browser and navigate to the address shown by `php artisan serve` (usually `http://localhost:8000`).
-3.  Enter the altitudes, separated by commas, in the input field and click "Calculate".
-4.  The result will be displayed on the page.
+![Shelter Calculator Web Interface](./public/via-web.png)
+
+1.  Serve the application using Laravel's built-in server or a web server like Apache or Nginx:
+
+```bash
+ php artisan serve
+```
+
+2.  Open your web browser and navigate to the [address](http://localhost:8000) shown by the previous command.
+
+3.  Enter the altitudes one by one and click "Calculate".
+
+4.  The result will be displayed on the right panel of the page with a graphical representation of the altitudes and the sheltered area.
+
+## Testing
+To run the tests, use the following command:
+```bash
+php artisan test
+```
+The tests cover the core logic of the shelter calculator.
 
 ## Design Choices
 
-*   The core logic is encapsulated in the `App\Services\ShelterCalculator` class.
-*   Input validation is performed in both the Artisan command and the web controller to ensure the altitudes are within the specified constraints.
-*   The web interface uses a simple Blade view to display the form and the result.
+-   The core logic is encapsulated in the `App\Services\ShelterCalculator` class.
+-   Input validation is performed in both the Artisan command and the web controller to ensure the altitudes are within the specified constraints.
+-   The web interface uses a simple Blade view to display the form and the result.
 
 ## Notes
 
-*   This implementation prioritizes clarity and simplicity.  For very large datasets, performance could be improved with more advanced algorithms, but for the problem constraints, the current approach is sufficient.
+-   This implementation prioritizes clarity and simplicity.
+-   For very large datasets, performance could be improved with more advanced algorithms, but for the problem constraints, the current approach is sufficient. 
