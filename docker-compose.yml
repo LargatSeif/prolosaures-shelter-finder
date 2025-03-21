@@ -1,0 +1,64 @@
+version: "3.8"
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        image: my-laravel-app
+        container_name: my-laravel-app
+        volumes:
+            - .:/var/www
+        ports:
+            - "9000:9000"
+        depends_on:
+            - db
+        environment:
+            - APP_NAME=Laravel
+            - APP_ENV=local
+            - APP_KEY=base64:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+            - APP_DEBUG=true
+            - APP_URL=http://localhost
+            - DB_CONNECTION=mysql
+            - DB_HOST=db
+            - DB_PORT=3306
+            - DB_DATABASE=laravel
+            - DB_USERNAME=sail
+            - DB_PASSWORD=password
+        networks:
+            - laravel
+
+    web:
+        image: nginx:alpine
+        container_name: my-laravel-app-web
+        ports:
+            - "8000:80"
+        volumes:
+            - .:/var/www
+            - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+        depends_on:
+            - app
+        networks:
+            - laravel
+
+    db:
+        image: mysql:8.0
+        container_name: my-laravel-app-db
+        ports:
+            - "3306:3306"
+        environment:
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_DATABASE=laravel
+            - MYSQL_USER=sail
+            - MYSQL_PASSWORD=password
+            - TZ=UTC
+        volumes:
+            - mysql_data:/var/lib/mysql
+        networks:
+            - laravel
+
+networks:
+    laravel:
+        driver: bridge
+
+volumes:
+    mysql_data:
