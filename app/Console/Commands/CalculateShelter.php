@@ -3,38 +3,45 @@
 namespace App\Console\Commands;
 
 use App\Services\ShelterCalculator;
+use App\Validators\AltitudeValidator;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Validator;
 
 class CalculateShelter extends Command
 {
     protected $signature = 'shelter:calculate {altitudes?*}';
+
     protected $description = 'Calculates the sheltered area given terrain altitudes.';
 
-    public function handle(ShelterCalculator $calculator)
+    /**
+     * Execute the console command.
+     *
+     * @param ShelterCalculator $calculator The shelter calculator service.
+     * @param AltitudeValidator $validator The altitude validator.
+     * @return int
+     */
+    
+    public function handle(ShelterCalculator $calculator, AltitudeValidator $validator)
     {
         $altitudes = $this->argument('altitudes');
-
+        
         if (empty($altitudes)) {
             $altitudesString = $this->ask('Enter the altitudes separated by spaces');
             $altitudes = explode(' ', $altitudesString);
         }
-
+        
         $altitudes = array_map('intval', $altitudes);
 
-        $validator = Validator::make(['altitudes' => $altitudes], [
-            'altitudes' => 'required|array|min:1|max:100000',
-            'altitudes.*' => 'required|integer|min:0|max:100000',
-        ]);
+        $validation = $validator->validate(['altitudes' => $this->argument('altitudes')]);
 
-        if ($validator->fails()) {
-            $this->error($validator->errors()->first());
+        if ($validation->fails()) {
+            $this->error($validation->errors()->first());
             return 1;
         }
 
-        $shelteredArea = $calculator->calculateShelteredArea($altitudes);
+        $result = $calculator->calculateShelteredArea($altitudes);
 
-        $this->info("Sheltered area: " . $shelteredArea);
+        $this->info("Sheltered area: " . $result['shelteredArea']);
+
         return 0;
     }
 }

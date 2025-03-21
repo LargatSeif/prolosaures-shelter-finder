@@ -7,4 +7,4 @@ Route::get('/', function () {
     return view('shelter_form');
 });
 
-Route::post('/calculate', [ShelterController::class, 'calculate'])->name('calculate');
+Route::post('/', [ ShelterController::class, 'calculate' ])->name('calculate');

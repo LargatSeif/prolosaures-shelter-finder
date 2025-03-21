@@ -32,14 +32,24 @@
                 <div id="altitude-inputs">
                     <label class="block text-gray-700 text-sm font-bold mb-2">Altitudes:</label>
                     <!-- Initial input -->
-                    <input type="number" name="altitudes[]"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline altitude-input"
-                        placeholder="Altitude" @if(isset($altitudes) && count($altitudes) > 0) value="{{ $altitudes[0] }}" @endif>
+                    <div class="flex items-center mb-2">
+                        <input type="number" name="altitudes[]"
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline altitude-input"
+                            placeholder="Altitude" @if(isset($altitudes) && count($altitudes) > 0) value="{{ $altitudes[0] }}" @endif>
+                        <button type="button" class="delete-altitude ml-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-3 rounded focus:outline-none focus:shadow-outline">
+                            &times;
+                        </button>
+                    </div>
                     @if(isset($altitudes))
                         @for($i = 1; $i < count($altitudes); $i++)
-                            <input type="number" name="altitudes[]"
-                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline altitude-input mt-2"
-                                placeholder="Altitude" value="{{ $altitudes[$i] }}">
+                            <div class="flex items-center mb-2">
+                                <input type="number" name="altitudes[]"
+                                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline altitude-input"
+                                    placeholder="Altitude" value="{{ $altitudes[$i] }}">
+                                <button type="button" class="delete-altitude ml-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-3 rounded focus:outline-none focus:shadow-outline">
+                                    &times;
+                                </button>
+                            </div>
                         @endfor
                     @endif
                 </div>
@@ -75,18 +85,53 @@
             const addAltitudeButton = document.getElementById('add-altitude');
             const altitudeInputsContainer = document.getElementById('altitude-inputs');
 
+            // Function to add delete button functionality
+            function setupDeleteButtons() {
+                document.querySelectorAll('.delete-altitude').forEach(button => {
+                    button.addEventListener('click', function() {
+                        // Only delete if there's more than one altitude input
+                        if (document.querySelectorAll('.altitude-input').length > 1) {
+                            this.parentElement.remove();
+                        } else {
+                            alert('You need at least one altitude input.');
+                        }
+                    });
+                });
+            }
+
+            // Setup delete buttons for initial elements
+            setupDeleteButtons();
+
             addAltitudeButton.addEventListener('click', function() {
+                const inputContainer = document.createElement('div');
+                inputContainer.classList.add('flex', 'items-center', 'mb-2');
+                
                 const newInput = document.createElement('input');
                 newInput.type = 'number';
                 newInput.name = 'altitudes[]';
                 newInput.classList.add('shadow', 'appearance-none', 'border', 'rounded', 'w-full', 'py-2',
                     'px-3', 'text-gray-700', 'leading-tight', 'focus:outline-none',
-                    'focus:shadow-outline', 'altitude-input', 'mt-2'); // Added mt-2 for spacing
+                    'focus:shadow-outline', 'altitude-input');
                 newInput.placeholder = 'Altitude';
-
-                altitudeInputsContainer.appendChild(newInput);
+                
+                const deleteButton = document.createElement('button');
+                deleteButton.type = 'button';
+                deleteButton.classList.add('delete-altitude', 'ml-2', 'bg-red-500', 'hover:bg-red-700', 'text-white', 
+                    'font-bold', 'py-2', 'px-3', 'rounded', 'focus:outline-none', 'focus:shadow-outline');
+                deleteButton.innerHTML = '&times;';
+                deleteButton.addEventListener('click', function() {
+                    if (document.querySelectorAll('.altitude-input').length > 1) {
+                        inputContainer.remove();
+                    } else {
+                        alert('You need at least one altitude input.');
+                    }
+                });
+                
+                inputContainer.appendChild(newInput);
+                inputContainer.appendChild(deleteButton);
+                altitudeInputsContainer.appendChild(inputContainer);
             });
-
+            
             const form = document.getElementById('shelter-form');
 
             form.addEventListener('submit', function(event) {
@@ -113,7 +158,7 @@
                 // Chart Data
                 const altitudes = @json($altitudes);
                 const sheltered = @json($sheltered); // Get the sheltered array from the controller
-                const labels = altitudes.map((_, index) => `Position ${index + 1}`); // Create labels
+                const labels = altitudes.map((altitude, index) => altitude); // Create labels
                 const backgroundColors = altitudes.map((_, index) => sheltered[index] ?
                     'rgba(255, 99, 132, 0.5)' : 'rgba(54, 162, 235, 0.5)'); // Red if sheltered, blue otherwise
                 const borderColors = altitudes.map((_, index) => sheltered[index] ?

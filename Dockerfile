@@ -19,6 +19,9 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN pecl install xdebug \
     && docker-php-ext-enable xdebug
 
+# Set PHP memory limit - Create a dedicated ini file
+RUN echo "memory_limit = 256M" > /usr/local/etc/php/conf.d/php-memory-limits.ini
+
 RUN composer install --no-ansi --no-interaction --no-scripts --optimize-autoloader
 
 RUN apk del .build-deps
