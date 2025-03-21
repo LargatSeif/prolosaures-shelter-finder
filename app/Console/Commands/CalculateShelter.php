@@ -26,12 +26,12 @@ class CalculateShelter extends Command
         
         if (empty($altitudes)) {
             $altitudesString = $this->ask('Enter the altitudes separated by spaces');
+            
             $altitudes = explode(' ', $altitudesString);
         }
-        
         $altitudes = array_map('intval', $altitudes);
 
-        $validation = $validator->validate(['altitudes' => $this->argument('altitudes')]);
+        $validation = $validator->validate(['altitudes' => $altitudes]);
 
         if ($validation->fails()) {
             $this->error($validation->errors()->first());
